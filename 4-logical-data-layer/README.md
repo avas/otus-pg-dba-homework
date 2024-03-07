@@ -40,14 +40,8 @@ You are now connected to database "testdb" as user "postgres".
 testdb=> \set PROMPT1 '%n@%/%R%x%# '
 postgres@testdb=# create schema testnm;
 CREATE SCHEMA
-postgres@testdb=# create table t1 (c1 integer);
-CREATE TABLE
-postgres@testdb=# insert into t1 (c1) values (1);
-INSERT 0 1
 postgres@testdb=# create role readonly;
 CREATE ROLE
-postgres@testdb=# drop table t1;
-DROP TABLE
 postgres@testdb=# create table testnm.t1 (c1 integer);
 CREATE TABLE
 postgres@testdb=# insert into testnm.t1 (c1) values (1);
