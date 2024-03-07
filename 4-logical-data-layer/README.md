@@ -158,4 +158,4 @@ ERROR:  permission denied for schema public
 LINE 1: create table t3 (c3 integer);
                      ^
 ```
-Теперь пользователь `testread` больше не может создавать таблицы.
+Теперь пользователь `testread` больше не может создавать таблицы в схеме `public`.
