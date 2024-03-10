@@ -165,7 +165,7 @@ a-vasenev@pg-dba-vm:~$ sudo docker restart pg-server-15
 pg-server-15
 ```
 Снова подключимся к нему и убедимся, что параметры действительно применились:
-```
+```sql
 a-vasenev@pg-dba-vm:~$ psql -h localhost -p 5433 -U postgres
 Password for user postgres:
 psql (14.11 (Ubuntu 14.11-0ubuntu0.22.04.1), server 15.6 (Debian 15.6-1.pgdg120+2))
@@ -177,17 +177,52 @@ postgres=# select name, setting, unit from pg_settings where name in ('max_conne
              name             | setting | unit
 ------------------------------+---------+------
  checkpoint_completion_target | 0.9     |
- default_statistics_target    | 100     |
- effective_cache_size         | 524288  | 8kB
- effective_io_concurrency     | 1       |
- maintenance_work_mem         | 65536   | kB
- max_connections              | 100     |
- max_wal_size                 | 1024    | MB
- min_wal_size                 | 80      | MB
+ default_statistics_target    | 500     |
+ effective_cache_size         | 393216  | 8kB
+ effective_io_concurrency     | 2       |
+ maintenance_work_mem         | 524288  | kB
+ max_connections              | 40      |
+ max_wal_size                 | 16384   | MB
+ min_wal_size                 | 4096    | MB
  random_page_cost             | 4       |
- shared_buffers               | 16384   | 8kB
- wal_buffers                  | 512     | 8kB
- work_mem                     | 4096    | kB
+ shared_buffers               | 131072  | 8kB
+ wal_buffers                  | 2048    | 8kB
+ work_mem                     | 6553    | kB
 (12 rows)
-
 ```
+
+Видно, что параметры применились, но как они повлияли на производительность кластера?
+```bash
+a-vasenev@pg-dba-vm:~$ pgbench -h localhost -p 5433 -U postgres -c 8 -P 6 -T 60 postgres
+Password:
+pgbench (14.11 (Ubuntu 14.11-0ubuntu0.22.04.1), server 15.6 (Debian 15.6-1.pgdg120+2))
+starting vacuum...end.
+progress: 6.0 s, 747.2 tps, lat 10.566 ms stddev 5.343
+progress: 12.0 s, 756.0 tps, lat 10.587 ms stddev 5.487
+progress: 18.0 s, 765.2 tps, lat 10.456 ms stddev 5.129
+progress: 24.0 s, 644.8 tps, lat 12.382 ms stddev 9.164
+progress: 30.0 s, 755.0 tps, lat 10.612 ms stddev 5.852
+progress: 36.0 s, 749.5 tps, lat 10.674 ms stddev 5.508
+progress: 42.0 s, 751.5 tps, lat 10.644 ms stddev 5.440
+progress: 48.0 s, 766.3 tps, lat 10.436 ms stddev 5.274
+progress: 54.0 s, 669.2 tps, lat 11.957 ms stddev 9.687
+progress: 60.0 s, 782.5 tps, lat 10.222 ms stddev 5.013
+transaction type: <builtin: TPC-B (sort of)>
+scaling factor: 1
+query mode: simple
+number of clients: 8
+number of threads: 1
+duration: 60 s
+number of transactions actually processed: 44331
+latency average = 10.815 ms
+latency stddev = 6.330 ms
+initial connection time = 70.107 ms
+tps = 739.519228 (without initial connection time)
+```
+Как видно, производительность выросла, но очень незначительно - 739.5 транзакций в секунду в среднем против 737.1 до изменений (+0.3%). На мой взгляд, изменение можно списать на погрешность измерений.
+
+> **Примечание**: Не уверен, что этот тест прошёл по плану - возможно, изменение производительности кластера должно было быть более существенным. Возможно, причина в том, что в этом задании предлагалось использовать виртуальную машину с SSD, а я использовал HDD. Может быть, повлиял тот факт, что я использовал Docker, и его применение существенно снизило производительность. Так или иначе, не уверен, что результатам этого теста можно доверять.
+
+## MVCC и autovacuum
+
+// TODO: сделать эту часть ДЗ
