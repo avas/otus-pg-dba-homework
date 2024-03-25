@@ -416,9 +416,6 @@ a-vasenev@pg-dba-vm:~$ sudo dd if=/dev/urandom of=/var/lib/postgresql/14/checksu
 Попробуем запустить кластер обратно и посмотрим, что получится:
 ```
 a-vasenev@pg-dba-vm:~$ sudo pg_ctlcluster 14 checksum start
-a-vasenev@pg-dba-vm:~$ pg_lcclusters
-Command 'pg_lcclusters' not found, did you mean:
-  command 'pg_lsclusters' from deb postgresql-common (238)
 a-vasenev@pg-dba-vm:~$ pg_lsclusters
 Ver Cluster  Port Status Owner    Data directory                  Log file
 14  checksum 5433 online postgres /var/lib/postgresql/14/checksum /var/log/postgresql/postgresql-14-checksum.log
